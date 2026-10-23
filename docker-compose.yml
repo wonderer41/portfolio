@@ -1,0 +1,41 @@
+# Deploy target: VM 103 (netbird-mgmt, 192.168.1.135) — the host with Traefik +
+# Let's Encrypt + public 80/443, same place Vaultwarden lives. Mirrors the
+# Traefik label pattern from that stack.
+#
+# Run as a Komodo Stack sourced from this repo. Komodo clones it and every
+# deploy rebuilds the image on the server (pull_policy: build below), whatever
+# the stack's Run Build / Auto Pull toggles say. Stack settings that matter:
+#   - File Paths: docker-compose.yml   (Komodo defaults to compose.yaml)
+#   - Environment: CONTACT_WEBHOOK_URL / CONTACT_WEBHOOK_TOKEN — Komodo writes
+#     them to .env next to this file (see .env.example).
+services:
+  portfolio:
+    build: .
+    image: portfolio:latest
+    # Never try to pull portfolio:latest from Docker Hub; build it on every
+    # `compose up`. Without this, Komodo's Auto Pull fails the deploy.
+    pull_policy: build
+    container_name: portfolio
+    restart: unless-stopped
+    networks: [gerardo_netbird]
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Denver
+    labels:
+      - traefik.enable=true
+      # Traefik's default (--providers.docker.network=netbird) doesn't match
+      # this network's real name, so name it explicitly.
+      - traefik.docker.network=gerardo_netbird
+      # Needs a matching DNS record in Cloudflare, and pomanor.com in the zone
+      # list of Traefik's Cloudflare account token (for the ACME DNS challenge).
+      - traefik.http.routers.portfolio.rule=Host(`resume.pomanor.com`)
+      - traefik.http.routers.portfolio.entrypoints=websecure
+      - traefik.http.routers.portfolio.tls=true
+      - traefik.http.routers.portfolio.tls.certresolver=letsencrypt
+      - traefik.http.services.portfolio.loadbalancer.server.port=3000
+
+# Traefik's network, defined by the NetBird/Traefik stack already on VM 103.
+networks:
+  gerardo_netbird:
+    external: true

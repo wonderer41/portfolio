@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio · Content + Voice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --prussian: #1c3d8f;
+    --night: #0e2050;
+    --sky: #3a6fc4;
+    --citron: #d7c742;
+    --vellum: #f1ead2;
+    --vellum-dim: rgba(241,234,210,0.65);
+    --vellum-faint: rgba(241,234,210,0.35);
+    --hair: rgba(241,234,210,0.18);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--prussian);
+    color: var(--vellum);
+    font-family: 'Newsreader', serif;
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .cap { text-transform: uppercase; letter-spacing: 0.12em; }
+  .citron { color: var(--citron); }
+  .dim { color: var(--vellum-dim); }
+
+  /* Page grid — main column + margin notes on the right */
+  .page {
+    max-width: 1180px; margin: 0 auto; padding: 56px 56px 120px;
+    display: grid; grid-template-columns: 1fr 260px; gap: 56px;
+  }
+  .main { min-width: 0; }
+  .margin { min-width: 0; }
+  .margin-sticky { position: sticky; top: 56px; }
+
+  /* Top header */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 14px; margin-bottom: 32px;
+    border-bottom: 1px solid var(--hair);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--vellum-dim);
+  }
+  .topbar .stamp { color: var(--citron); }
+
+  h1.title {
+    font-family: 'Newsreader', serif; font-weight: 400;
+    font-size: 80px; line-height: 0.95; letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  h1.title em { font-style: italic; color: var(--citron); }
+  .subtitle {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 22px; line-height: 1.35;
+    color: var(--vellum-dim); max-width: 56ch; margin: 0 0 36px;
+  }
+
+  /* Section anatomy */
+  section { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--hair); }
+  section:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+  .sec-head {
+    display: flex; align-items: baseline; gap: 16px; margin-bottom: 22px;
+  }
+  .sec-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--citron); letter-spacing: 0.1em;
+  }
+  .sec-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--vellum);
+  }
+  .sec-rule { flex: 1; height: 1px; background: var(--hair); align-self: center; }
+
+  /* Big quotable display */
+  .display {
+    font-family: 'Newsreader', serif; font-weight: 400;
+    font-size: 42px; line-height: 1.1; letter-spacing: -0.01em;
+    margin: 0 0 18px; color: var(--vellum);
+  }
+  .display em { font-style: italic; color: var(--citron); }
+
+  /* Option cards (3 voice/copy choices stacked) */
+  .options { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+  .option {
+    border: 1px solid var(--hair); padding: 22px 26px;
+    background: rgba(14,32,80,0.4); border-radius: 2px;
+    position: relative;
+  }
+  .option .tag {
+    position: absolute; top: -1px; left: -1px;
+    background: var(--citron); color: var(--night);
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.14em; padding: 4px 10px;
+    text-transform: uppercase;
+  }
+  .option .copy {
+    font-family: 'Newsreader', serif;
+    font-size: 22px; line-height: 1.4; color: var(--vellum);
+    margin: 8px 0 0; max-width: 56ch;
+  }
+  .option .copy em { font-style: italic; color: var(--citron); }
+  .option .copy.small { font-size: 17px; }
+  .option .why {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--vellum-faint); letter-spacing: 0.06em;
+    margin-top: 12px;
+  }
+
+  /* Project card */
+  .proj {
+    border: 1px solid var(--hair); padding: 28px 30px 26px;
+    background: rgba(14,32,80,0.3); border-radius: 2px;
+    margin-bottom: 22px;
+  }
+  .proj .proj-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 18px; margin-bottom: 4px; flex-wrap: wrap;
+  }
+  .proj h3 {
+    font-family: 'Newsreader', serif; font-weight: 500;
+    font-size: 28px; line-height: 1.1; letter-spacing: -0.01em;
+    margin: 0; color: var(--vellum);
+  }
+  .proj h3 em { font-style: italic; color: var(--citron); font-weight: 400; }
+  .proj .when {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.1em; color: var(--vellum-faint);
+    text-transform: uppercase; white-space: nowrap;
+  }
+  .proj .tldr {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 19px; line-height: 1.4; color: var(--vellum-dim);
+    margin: 6px 0 18px; max-width: 60ch;
+  }
+  .proj p { margin: 0 0 10px; color: var(--vellum); }
+  .proj .stack {
+    margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--hair);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.06em; color: var(--vellum-dim);
+  }
+  .proj .stack .k { color: var(--citron); margin-right: 6px; }
+
+  /* Skills 2-col */
+  .skills {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px 36px;
+  }
+  .skills h4 {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--citron); margin: 0 0 8px;
+  }
+  .skills p { margin: 0; font-size: 16px; line-height: 1.55; }
+
+  /* Currently / now block */
+  .now-grid {
+    display: grid; grid-template-columns: 110px 1fr; gap: 14px 24px;
+    margin-top: 8px;
+  }
+  .now-grid .k {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--vellum-faint); padding-top: 4px;
+  }
+  .now-grid .v { font-size: 17px; line-height: 1.45; }
+  .now-grid .v em { color: var(--citron); font-style: italic; }
+  .now-grid .v .placeholder {
+    color: var(--citron); border: 1px dashed var(--citron);
+    padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    display: inline-block;
+  }
+
+  /* Margin notes */
+  .note {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    line-height: 1.55; color: var(--citron);
+    padding: 12px 14px; border-left: 2px solid var(--citron);
+    background: rgba(215,199,66,0.06);
+    margin-bottom: 14px;
+  }
+  .note .label {
+    display: block; font-size: 9px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--citron);
+    margin-bottom: 6px; opacity: 0.7;
+  }
+  .note p { margin: 0 0 6px; }
+  .note p:last-child { margin: 0; }
+  .note .strike { text-decoration: line-through; color: var(--vellum-faint); }
+  .note .arrow { color: var(--citron); }
+
+  /* Inline retouches in main copy */
+  .ins {
+    background: rgba(215,199,66,0.18);
+    border-bottom: 1px solid var(--citron);
+    padding: 0 3px;
+  }
+  .del {
+    text-decoration: line-through;
+    color: var(--vellum-faint);
+  }
+
+  /* Tag list */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .tags span {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.08em; padding: 3px 8px;
+    border: 1px solid var(--hair); border-radius: 999px;
+    color: var(--vellum-dim);
+  }
+  .tags span.hot { color: var(--citron); border-color: var(--citron); }
+
+  /* Footer */
+  .footer {
+    margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--hair);
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--vellum-faint);
+  }
+
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; padding: 32px; }
+    .margin-sticky { position: static; }
+    .skills { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <main class="main">
+
+    <div class="topbar">
+      <span>Folio № 01 · Content + Voice</span>
+      <span class="stamp">DRAFT · v0.1</span>
+      <span>26 / 05 / 2026</span>
+    </div>
+
+    <h1 class="title">Gerardo Lazo<br/><em>— a working draft.</em></h1>
+    <p class="subtitle">Your portfolio's copy, structured. The page itself comes later — first we lock the voice, the story, and the words. My retouches sit in the margin; suggested rewrites in the body are underlined in citron. Anything bracketed is a question for you.</p>
+
+    <!-- ============ 1. WHO YOU ARE ============ -->
+    <section data-screen-label="01 Identity">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <span class="sec-title">Identity · The one line</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <p class="display">A portfolio needs <em>one sentence</em> someone can repeat to a friend.</p>
+      <p class="dim" style="max-width:60ch; margin-bottom:24px;">Three voices, three angles. Pick one — or steal a phrase from each. The chef-to-engineer pivot is your <em style="color:var(--citron)">unfair advantage</em>; the question is just how loudly you say it.</p>
+
+      <div class="options">
+        <div class="option">
+          <span class="tag">A · Quietly technical</span>
+          <p class="copy">Software engineer. I build interfaces and the back-ends behind them — currently a full-stack booking platform, an AI streaming plugin, and a homelab that probably runs too many things.</p>
+          <p class="why">Matches the Cyanotype mood. Holds the chef story for the bio, not the headline.</p>
+        </div>
+
+        <div class="option">
+          <span class="tag">B · The pivot, stated</span>
+          <p class="copy">I build software for a living and used to bake bread for one. Engineering student at Ensign; Cordon Bleu, class of <em>'17</em>.</p>
+          <p class="why">Leads with the hook. Memorable. Makes recruiters stop scrolling.</p>
+        </div>
+
+        <div class="option">
+          <span class="tag">C · Object-first</span>
+          <p class="copy">Things made <em>in the open</em>, kept on file. Booking platforms, streaming plugins, a homelab. Software engineering at Ensign — pastry in another life.</p>
+          <p class="why">Echoes the Cyanotype hero you liked. Lets the work do the talking.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2. BIO ============ -->
+    <section data-screen-label="02 Bio">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <span class="sec-title">Bio · Short + long</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <div class="options">
+        <div class="option">
+          <span class="tag">Short · 1 line</span>
+          <p class="copy small">Software engineering student at Ensign College (BS, 2027). Full-stack — TypeScript, Python, a stubborn affection for self-hosting. Former pastry chef, Le Cordon Bleu '17.</p>
+        </div>
+
+        <div class="option">
+          <span class="tag">Long · about page</span>
+          <p class="copy small">I'm Gerardo — a software engineering student in my fifth semester at Ensign College, currently building a full-stack booking platform from scratch for a premium transportation service and co-developing an AI-curated streaming plugin for Jellyfin.</p>
+          <p class="copy small" style="margin-top:14px;">Before I wrote code, I cooked. I graduated from Le Cordon Bleu in 2017 with a degree in Gastronomy &amp; Business Management — which taught me a few things that have aged surprisingly well: <em>mise en place</em>, the value of a tight feedback loop, and that a system is only as good as its weakest service.</p>
+          <p class="copy small" style="margin-top:14px;">Outside of class I run a <span class="ins">multi-VM Proxmox homelab</span> that hosts most of what I use day-to-day, including the projects I'd rather not pay someone else to host. I'm comfortable across Java, TypeScript, Python, and SQL; I'm currently going deeper on Spring Boot and would like my next role to involve more of it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. PROJECTS ============ -->
+    <section data-screen-label="03 Projects">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <span class="sec-title">Projects · Retouched</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <p class="dim" style="margin-bottom: 26px; max-width: 60ch;">Each project gets a <em style="color:var(--citron); font-style:italic;">tl;dr</em> in plain English before the engineering detail. The resume bullets are good — they just need a human first.</p>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>Bonanza Transportation <em>— full-stack booking platform</em></h3>
+          <span class="when">Apr 2026 — present · sole dev</span>
+        </div>
+        <p class="tldr">A premium transportation service had no way for customers to book online. I built one — from the database up to the Stripe receipt — by myself.</p>
+        <p>Architected the whole system from zero: schema, payment flow, SMS confirmations, deployment. Started with the boring docs (System Design, ERD, service-layer class diagram, MVP use cases) so the build itself stayed tightly scoped.</p>
+        <p>Configured a real engineering workflow on top — GitHub Org with branch protection, Vercel CI/CD, custom domain on Google Workspace — because shipping a one-person project should still look like a team made it.</p>
+        <div class="stack">
+          <span class="k">Stack</span>Next.js 15 (App Router) · TypeScript · Supabase (Postgres) · Stripe · Twilio · Google Maps · Vercel
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>Project Zenith <em>— Jellyfin AI streaming plugin</em></h3>
+          <span class="when">Jun — Nov 2025 · co-developer</span>
+        </div>
+        <p class="tldr">Bringing back the feeling of "what's on TV?" — but for a self-hosted kids' library, with an LLM playing programming director.</p>
+        <p>Co-built a plugin that turns an on-demand Jellyfin library into a continuous, AI-curated live channel for children's content. I owned the backend — a Python/FastAPI service that the C# plugin talks to over REST.</p>
+        <p>The integration gap nobody had solved: Jellyfin couldn't natively serve the AI-scheduled stream. I engineered server-side video streaming straight from FastAPI to close it. All inference runs locally through Ollama — no external API in the loop.</p>
+        <div class="stack">
+          <span class="k">Stack</span>Python · FastAPI · REST · C# (.NET plugin) · Ollama
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:8px;">
+        <span class="label">Margin · open questions</span>
+        <p>→ <strong>Live links?</strong> Bonanza has a custom domain — link it. Zenith — repo URL?</p>
+        <p>→ Any <strong>screenshots</strong> we can use? Even one hero shot per project lifts the whole page.</p>
+        <p>→ Is there a <strong>third project</strong> worth showing? Even a small one. Two is workable, three is a portfolio.</p>
+      </div>
+    </section>
+
+    <!-- ============ 4. HOMELAB ============ -->
+    <section data-screen-label="04 Homelab">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <span class="sec-title">Homelab · Reframed</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <p class="display" style="font-size:32px;">On the resume: <em>"Self-Hosted Infrastructure Administrator."</em></p>
+      <p class="dim" style="margin-bottom: 18px; max-width:60ch;">Great line for a recruiter; too corporate for a portfolio. On your own site, this is just <em style="color:var(--citron);font-style:italic;">"the homelab"</em> — a hobby that happens to teach you production-grade Linux.</p>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>The Homelab</h3>
+          <span class="when">ongoing · personal infra</span>
+        </div>
+        <p class="tldr">A Proxmox host running 20+ Docker containers — most of what I'd otherwise pay a SaaS for. It's where I learn the unglamorous parts of being an engineer.</p>
+        <p>A 6-service automation pipeline I built around Sonarr — chaining Prowlarr, qBittorrent (behind Gluetun/WireGuard), Bazarr, Shoko, and Jellyfin into one hardlink-based workflow.</p>
+        <p>Nginx Proxy Manager fronts everything with TLS; NetBird gives me mesh VPN access from anywhere. Along the way I've broken and fixed GPU passthrough, restructured NFS storage under load, and lost more than one VM to OOMs — which has done more for my Linux skills than any course.</p>
+        <div class="stack">
+          <span class="k">Stack</span>Proxmox · Docker · Linux (Fedora) · Nginx · WireGuard · NetBird
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5. SKILLS ============ -->
+    <section data-screen-label="05 Skills">
+      <div class="sec-head">
+        <span class="sec-num">05</span>
+        <span class="sec-title">Skills · Grouped, lightly opinionated</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <p class="dim" style="margin-bottom:22px; max-width:60ch;">The resume lists everything flat. The portfolio version is honest about what you reach for first, what you're learning, and what you can read but wouldn't claim to own.</p>
+
+      <div class="skills">
+        <div>
+          <h4>Daily drivers</h4>
+          <p>TypeScript · Next.js · React · Python · FastAPI · PostgreSQL · Docker</p>
+        </div>
+        <div>
+          <h4>First language, still home</h4>
+          <p>Java — where I learned to think. Comfortable reading, writing, and debugging.</p>
+        </div>
+        <div>
+          <h4>Currently going deeper</h4>
+          <p>Spring &amp; Spring Boot fundamentals · advanced Postgres · system design</p>
+        </div>
+        <div>
+          <h4>Comfortable in</h4>
+          <p>SQL · Node/Express · OAuth 2.0 · REST design · Git workflows · Linux (Fedora)</p>
+        </div>
+        <div>
+          <h4>Familiar with</h4>
+          <p>C# (enough to build a .NET plugin) · Nginx · Vercel · Proxmox</p>
+        </div>
+        <div>
+          <h4>Foundations I lean on</h4>
+          <p>Algorithms · Big-O · Discrete math · Number theory · Mathematical induction</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6. CURRENTLY ============ -->
+    <section data-screen-label="06 Currently">
+      <div class="sec-head">
+        <span class="sec-num">06</span>
+        <span class="sec-title">Currently · New section</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <p class="display" style="font-size:32px;">The thing your resume <em>can't</em> say.</p>
+      <p class="dim" style="margin-bottom:22px; max-width: 60ch;">A small "now" block makes the portfolio feel inhabited — and gives recruiters something to open with. Fill in what's true. The placeholders are mine; replace them.</p>
+
+      <div class="now-grid">
+        <div class="k">Building</div>
+        <div class="v">Bonanza's MVP — currently wiring up the Stripe webhook and a real <em>cancellation</em> flow.</div>
+
+        <div class="k">Learning</div>
+        <div class="v">Spring Boot, properly this time. <em>and</em> reading <span class="placeholder">[book?]</span></div>
+
+        <div class="k">Listening to</div>
+        <div class="v"><span class="placeholder">[a record — In Rainbows, Adventure, True…?]</span></div>
+
+        <div class="k">Cooking</div>
+        <div class="v"><span class="placeholder">[one dish — sourdough? a family recipe?]</span> <span class="dim">(the chef line earns its keep here)</span></div>
+
+        <div class="k">Available for</div>
+        <div class="v">Summer '26 internships · open to part-time during semester · <em>full-stack roles</em> preferred.</div>
+
+        <div class="k">Based in</div>
+        <div class="v"><span class="placeholder">[city, state]</span></div>
+      </div>
+    </section>
+
+    <!-- ============ 7. CONTACT ============ -->
+    <section data-screen-label="07 Contact">
+      <div class="sec-head">
+        <span class="sec-num">07</span>
+        <span class="sec-title">Contact · Retouches needed</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <div class="now-grid">
+        <div class="k">Email</div>
+        <div class="v"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c7b5b500b080a7c59524f555b5212595849">[email&#160;protected]</a> <span class="dim">— fine, but a personal address ages better past graduation. <span class="placeholder">[gerardo.lazo@…]?</span></span></div>
+
+        <div class="k">LinkedIn</div>
+        <div class="v">linkedin.com/in/arones-41-gerardo <span class="dim">— consider claiming <em>/in/gerardolazo</em> if it's free; cleaner on a business card.</span></div>
+
+        <div class="k">GitHub</div>
+        <div class="v"><span class="del">github.com/[your-handle]</span> <span class="placeholder">[real handle, please]</span></div>
+
+        <div class="k">Phone</div>
+        <div class="v">(435) 513-5284 <span class="dim">— keep on the resume, optional for the public portfolio.</span></div>
+      </div>
+    </section>
+
+    <!-- ============ 8. RETOUCH SUMMARY ============ -->
+    <section data-screen-label="08 Retouches">
+      <div class="sec-head">
+        <span class="sec-num">08</span>
+        <span class="sec-title">Resume retouches · Apply back to the .docx too</span>
+        <span class="sec-rule"></span>
+      </div>
+
+      <ul style="font-family:'Newsreader',serif; font-size:17px; line-height:1.7; padding-left:22px; color:var(--vellum); max-width: 64ch;">
+        <li>Replace <span class="del">github.com/[your-handle]</span> with the actual handle — it's a placeholder in the live file.</li>
+        <li>Lead Education with <strong>Ensign</strong>, but consider moving <strong>Le Cordon Bleu</strong> up — on a resume it's a footnote, but it's a conversation starter. Try it under the heading and see how it reads.</li>
+        <li>"Self-Hosted Infrastructure Administrator" reads as self-assigned. Rename it <strong>"Homelab Infrastructure · personal"</strong> on the resume — same content, less title-inflation.</li>
+        <li>Bonanza Transportation: add a <strong>live URL</strong> if the MVP is shipped. Recruiters will click.</li>
+        <li>Skills line: <em>"Java (first language learned; comfortable reading, writing, and debugging)"</em> — tighten to <strong>"Java (first language; production-comfortable)"</strong>.</li>
+        <li>Coursework grade footnote — <em>"(lowest grade: A-)"</em> — is great signal, keep it.</li>
+        <li>Consider adding a 1–2 line <strong>Summary</strong> at the very top of the resume, mirroring the portfolio bio: <em>"SE student (BS, '27, Ensign) and former pastry chef (Cordon Bleu, '17). Full-stack — TS, Python, Java. Currently building a payments-integrated booking platform from scratch."</em></li>
+      </ul>
+    </section>
+
+    <div class="footer">
+      <span>Doc · Portfolio v0.1 · Cyanotype</span>
+      <span class="citron">Awaiting input</span>
+      <span>GL · 2026</span>
+    </div>
+  </main>
+
+  <!-- =================== MARGIN NOTES =================== -->
+  <aside class="margin">
+    <div class="margin-sticky">
+      <div class="note">
+        <span class="label">Note · 01</span>
+        <p>The strongest line in the whole resume is <em>"Bachelor in Gastronomy and Business Management."</em></p>
+        <p>It's not on-brand for a software job. That's exactly why it works — it tells the reader something no other engineer is telling them.</p>
+      </div>
+
+      <div class="note">
+        <span class="label">Note · 02</span>
+        <p>The voice we want: <em>quiet, technical, observant</em>. Sentences short. Not selling. Showing.</p>
+        <p>If a line could fit on a LinkedIn ad, rewrite it.</p>
+      </div>
+
+      <div class="note">
+        <span class="label">Note · 03</span>
+        <p>The portfolio should feel like a <em>folio</em> — a working document — not a marketing page.</p>
+        <p>This is why we're keeping the Cyanotype direction: it reads like a blueprint, not a pitch deck.</p>
+      </div>
+
+      <div class="note">
+        <span class="label">To resolve</span>
+        <p>1 · GitHub handle</p>
+        <p>2 · City / location</p>
+        <p>3 · Live URL for Bonanza?</p>
+        <p>4 · A third project, or is it just the two + homelab?</p>
+        <p>5 · Personal "now" details (record, dish, book)</p>
+        <p>6 · How loud do you want the chef story? — A (quiet), B (lead), or C (object-first)</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

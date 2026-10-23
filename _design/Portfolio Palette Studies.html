@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio · Palette + Type Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;700&family=Caveat:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: #f0eee9; font-family: 'Space Grotesk', system-ui, sans-serif; color: #1a1a1a; }
+  .rationale {
+    max-width: 760px; margin: 48px auto 8px; padding: 0 32px;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    color: #2a251f; font-size: 14px; line-height: 1.55;
+  }
+  .rationale h1 {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: 38px; line-height: 1.05; letter-spacing: -0.01em;
+    margin: 0 0 14px; color: #1a1a1a;
+  }
+  .rationale h1 em { font-style: italic; color: #2a3fa8; }
+  .rationale p { margin: 0 0 10px; max-width: 64ch; }
+  .rationale .meta { color: rgba(60,50,40,.6); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 18px; }
+  .rationale ul { padding-left: 18px; margin: 6px 0 0; }
+  .rationale li { margin-bottom: 4px; }
+
+  /* Reset inside artboards — design-canvas applies content as-is. */
+  .ab { width: 100%; height: 100%; box-sizing: border-box; position: relative; overflow: hidden; }
+  .ab * { box-sizing: border-box; }
+
+  /* Common artboard chrome */
+  .swatches { display: flex; gap: 0; }
+  .swatch { flex: 1; aspect-ratio: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px 12px; }
+  .swatch .hex { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.04em; }
+  .swatch .name { font-family: 'JetBrains Mono', monospace; font-size: 9px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+
+  .ref-note {
+    position: absolute; bottom: 14px; left: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.06em; opacity: 0.55;
+  }
+
+  /* --- 1. COBALT + MARIGOLD (In Rainbows) --- */
+  .ab-cobalt {
+    background: #0a0e1f; color: #f4ecd8;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ab-cobalt .hero {
+    padding: 36px 36px 0; position: relative;
+  }
+  .ab-cobalt .stack {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 92px; line-height: 0.92; letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+  .ab-cobalt .stack .l1 { color: #2a4ff5; }
+  .ab-cobalt .stack .l2 { color: #f4b537; transform: translateX(28px); display: block; }
+  .ab-cobalt .stack .l3 { color: #ed4a3a; transform: translateX(56px); display: block; }
+  .ab-cobalt .stack .l4 { color: #f4ecd8; transform: translateX(84px); display: block; }
+  .ab-cobalt .meta-row {
+    margin-top: 36px; display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: rgba(244,236,216,0.55);
+  }
+  .ab-cobalt .swatches { margin-top: 26px; }
+  .ab-cobalt .type-pairing {
+    padding: 28px 36px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+  }
+  .ab-cobalt .type-pairing .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.5;
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  .ab-cobalt .display-sample { font-family: 'Archivo Black', sans-serif; font-size: 32px; line-height: 0.95; }
+  .ab-cobalt .body-sample { font-family: 'Space Grotesk', sans-serif; font-size: 13px; line-height: 1.5; color: rgba(244,236,216,0.78); }
+
+  /* --- 2. POOL TILE (Cowboy untitled) --- */
+  .ab-tile {
+    background: #1683a8; color: #fff8e7;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.18) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(255,255,255,0.18) 2px, transparent 2px);
+    background-size: 88px 88px;
+    background-position: -2px -2px;
+  }
+  .ab-tile .hero {
+    padding: 60px 44px 0; position: relative;
+  }
+  .ab-tile h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 96px; line-height: 0.92; letter-spacing: -0.04em;
+    margin: 0; color: #fff8e7;
+    font-variation-settings: "opsz" 96;
+  }
+  .ab-tile h1 .ampr { color: #e8c63d; font-style: italic; font-weight: 600; }
+  .ab-tile h1 .surname {
+    display: block; color: #d83c2a; font-weight: 800;
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.12);
+  }
+  .ab-tile .meta { margin-top: 26px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
+  .ab-tile .pill {
+    display: inline-block; padding: 4px 10px; border-radius: 999px;
+    background: #d83c2a; color: #fff8e7; margin-right: 6px;
+  }
+  .ab-tile .pill.alt { background: #e8c63d; color: #1a2540; }
+  .ab-tile .swatches { margin-top: 30px; }
+  .ab-tile .type-pairing { padding: 26px 44px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .ab-tile .type-pairing .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; color: #fff8e7; }
+  .ab-tile .display-sample { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 30px; line-height: 0.96; }
+  .ab-tile .body-sample { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.55; opacity: 0.85; }
+
+  /* --- 3. DUSK DRIFT (Madeon Adventure + Discovery) --- */
+  .ab-dusk {
+    background: linear-gradient(180deg, #9bc4e8 0%, #c8b0e3 38%, #e8a4a8 68%, #f4c89a 100%);
+    color: #2a1f3a;
+    font-family: 'Manrope', sans-serif;
+  }
+  .ab-dusk .hero { padding: 56px 44px 0; position: relative; }
+  .ab-dusk h1 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400; font-style: italic;
+    font-size: 110px; line-height: 0.92; letter-spacing: -0.02em;
+    margin: 0; color: #2a1f3a;
+  }
+  .ab-dusk h1 .last {
+    display: block; font-style: normal; color: #fff;
+    -webkit-text-stroke: 1.5px #2a1f3a;
+    text-stroke: 1.5px #2a1f3a;
+    text-shadow: 3px 3px 0 #2a1f3a;
+    margin-top: -8px;
+  }
+  .ab-dusk .meta {
+    margin-top: 22px;
+    font-family: 'Manrope', sans-serif; font-weight: 500;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(42,31,58,0.65);
+  }
+  .ab-dusk .chevrons {
+    position: absolute; right: 36px; top: 52px;
+    display: flex; gap: 4px; opacity: 0.55;
+  }
+  .ab-dusk .chev {
+    width: 14px; height: 36px;
+    clip-path: polygon(0 0, 100% 50%, 0 100%, 30% 50%);
+    background: #2a1f3a;
+  }
+  .ab-dusk .swatches { margin-top: 30px; }
+  .ab-dusk .type-pairing { padding: 26px 44px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .ab-dusk .type-pairing .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .ab-dusk .display-sample { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 36px; line-height: 0.95; color: #2a1f3a; }
+  .ab-dusk .body-sample { font-family: 'Manrope', sans-serif; font-size: 13px; line-height: 1.55; color: rgba(42,31,58,0.78); }
+
+  /* --- 4. INKED PAPER (Avicii True) --- */
+  .ab-ink {
+    background: #f3ecd9;
+    color: #18244a;
+    font-family: 'Manrope', sans-serif;
+    background-image: radial-gradient(circle at 1px 1px, rgba(24,36,74,0.07) 1px, transparent 0);
+    background-size: 6px 6px;
+  }
+  .ab-ink .hero { padding: 56px 44px 0; position: relative; }
+  .ab-ink .brush {
+    font-family: 'Caveat', cursive; font-weight: 700;
+    font-size: 168px; line-height: 0.85; letter-spacing: -0.02em;
+    color: #18244a; margin: 0; transform: rotate(-3deg) translateX(-4px);
+  }
+  .ab-ink .stamp {
+    position: absolute; right: 44px; top: 56px;
+    border: 1.5px solid #b1432a; color: #b1432a;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 6px 10px; border-radius: 2px;
+    transform: rotate(6deg);
+  }
+  .ab-ink .meta {
+    margin-top: 26px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: rgba(24,36,74,0.6);
+  }
+  .ab-ink .underline { display: inline-block; border-bottom: 2px solid #b1432a; padding-bottom: 1px; }
+  .ab-ink .swatches { margin-top: 26px; }
+  .ab-ink .type-pairing { padding: 26px 44px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .ab-ink .type-pairing .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .ab-ink .display-sample { font-family: 'Caveat', cursive; font-weight: 700; font-size: 56px; line-height: 0.9; color: #18244a; }
+  .ab-ink .body-sample { font-family: 'Manrope', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.55; color: rgba(24,36,74,0.75); }
+
+  /* --- 5. CYANOTYPE (zine / architectural blue) --- */
+  .ab-cyan {
+    background: #1c3d8f;
+    color: #f1ead2;
+    font-family: 'Newsreader', serif;
+  }
+  .ab-cyan .hero {
+    padding: 44px 44px 0; position: relative;
+    border-bottom: 1px solid rgba(241,234,210,0.18);
+  }
+  .ab-cyan .topbar {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(241,234,210,0.6); margin-bottom: 32px;
+  }
+  .ab-cyan h1 {
+    font-family: 'Newsreader', serif; font-weight: 400;
+    font-size: 84px; line-height: 0.95; letter-spacing: -0.02em;
+    margin: 0; color: #f1ead2;
+  }
+  .ab-cyan h1 em { font-style: italic; color: #d7c742; font-weight: 400; }
+  .ab-cyan .grid-lines {
+    position: absolute; inset: 44px 44px 0 44px; pointer-events: none;
+    background-image: linear-gradient(90deg, rgba(241,234,210,0.06) 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%;
+  }
+  .ab-cyan .meta-row {
+    margin: 28px 0 24px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .ab-cyan .meta-row .item {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .ab-cyan .meta-row .item .k { opacity: 0.5; display: block; margin-bottom: 4px; font-size: 9px; }
+  .ab-cyan .meta-row .item .v { color: #d7c742; }
+  .ab-cyan .swatches { margin-top: 0; }
+  .ab-cyan .type-pairing { padding: 26px 44px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .ab-cyan .type-pairing .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .ab-cyan .display-sample { font-family: 'Newsreader', serif; font-style: italic; font-size: 32px; line-height: 0.98; color: #f1ead2; }
+  .ab-cyan .body-sample { font-family: 'Newsreader', serif; font-size: 14px; line-height: 1.55; color: rgba(241,234,210,0.85); }
+
+</style>
+</head>
+<body>
+
+  <div class="rationale">
+    <div class="meta">Portfolio · Round 01 · Palette + Type</div>
+    <h1>Five directions, all <em>blue-led</em>, none safe.</h1>
+    <p>Pulling from your refs — Radiohead's prismatic confidence, the surreal pool-tile cyan from the cowboy shot, Madeon &amp; Discovery's dusk gradients, Avicii's ink-and-paper restraint, and a wildcard cyanotype zine — the goal is to find the one tone of voice your work will live inside.</p>
+    <p style="opacity:0.65;">Each tile is a record sleeve: a name lockup as the "cover," the palette as a strip below, and a type pairing applied to a display + body sample. Pan/zoom the canvas. Open any one fullscreen with the expand button (top-right of each card).</p>
+  </div>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="palettes.jsx"></script>
+
+</body>
+</html>

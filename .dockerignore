@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.gitignore
+README.md
+_design
+npm-debug.log*
+.env*
+Dockerfile
+.dockerignore
+docker-compose.yml
+homelab_complete_documentation*.md

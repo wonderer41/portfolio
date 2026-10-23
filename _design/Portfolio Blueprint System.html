@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio · Blueprint System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a1a45;
+    --bg-deep:   #061030;
+    --grid:      rgba(255,255,255,0.035);
+    --grid-mid:  rgba(255,255,255,0.08);
+    --trace:     rgba(155,202,240,0.45);
+    --trace-bright: #e8f4ff;
+    --pad:       #4af0ff;
+    --pad-warm:  #d7c742;
+    --citron:    #d7c742;
+    --vellum:    #f1ead2;
+    --vellum-dim: rgba(241,234,210,0.55);
+    --vellum-faint: rgba(241,234,210,0.28);
+    --hair: rgba(241,234,210,0.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--vellum);
+    font-family: 'Newsreader', serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse at center top, rgba(74,240,255,0.05), transparent 60%),
+      radial-gradient(ellipse at center bottom, rgba(215,199,66,0.04), transparent 60%);
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ---------- SCREEN / PANEL ---------- */
+  .screen {
+    position: relative; min-height: 100vh; width: 100%;
+    overflow: hidden;
+  }
+
+  /* Blueprint grid background — two layers, a faint base + accent rule every 5 units */
+  .grid-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      linear-gradient(var(--grid-mid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-mid) 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px, 200px 200px, 200px 200px;
+    mask-image: radial-gradient(ellipse at center, #000 30%, rgba(0,0,0,0.4) 90%);
+  }
+
+  /* Faint binary code bleed (decorative columns) */
+  .binary {
+    position: absolute; pointer-events: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: rgba(155,202,240,0.18); letter-spacing: 0.05em;
+    line-height: 1.55; user-select: none;
+    white-space: pre;
+  }
+  .binary.b1 { top: 12%; left: 240px; }
+  .binary.b2 { top: 56%; right: 240px; text-align: right; }
+  .binary.b3 { bottom: 10%; left: 320px; }
+
+  /* ---------- PCB SVG ---------- */
+  .pcb {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: visible;
+  }
+  .pcb .trace {
+    fill: none;
+    stroke: var(--trace);
+    stroke-width: 1.1;
+    stroke-linejoin: miter;
+    stroke-linecap: square;
+  }
+  .pcb .pulse {
+    fill: none;
+    stroke: var(--trace-bright);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px var(--pad)) drop-shadow(0 0 8px rgba(74,240,255,0.4));
+    opacity: 0.95;
+  }
+  .pcb .pad {
+    fill: var(--pad);
+    filter: drop-shadow(0 0 5px var(--pad));
+  }
+  .pcb .pad-warm { fill: var(--pad-warm); filter: drop-shadow(0 0 5px var(--pad-warm)); }
+  .pcb .pad-outline {
+    fill: none; stroke: var(--trace); stroke-width: 1;
+  }
+  .pcb .annot {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    fill: rgba(155,202,240,0.55); letter-spacing: 0.08em;
+  }
+  .pcb .annot.citron { fill: var(--citron); }
+
+  /* ---------- HERO CONTENT ---------- */
+  .hero {
+    position: relative; z-index: 3;
+    min-height: 100vh; padding: 56px 80px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .topbar {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--vellum-dim);
+  }
+  .topbar .left { text-align: left; }
+  .topbar .mid { text-align: center; color: var(--citron); }
+  .topbar .right { text-align: right; }
+  .topbar .dot {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--pad); border-radius: 50%;
+    box-shadow: 0 0 6px var(--pad); margin-right: 8px;
+    vertical-align: 1px;
+    animation: blink 1.6s ease-in-out infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  .center {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    position: relative;
+  }
+
+  /* The "menu-style" tasting-menu serif label, like the ref */
+  .menu-label {
+    font-family: 'Newsreader', serif;
+    font-weight: 400; font-style: italic;
+    font-size: 14px; letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--citron);
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 28px;
+  }
+  .menu-label::before, .menu-label::after {
+    content: ''; height: 1px; width: 32px; background: var(--citron); opacity: 0.7;
+  }
+  .menu-sub {
+    font-family: 'Newsreader', serif;
+    font-weight: 400; font-style: italic;
+    font-size: 13px; letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--vellum-dim);
+    margin: -16px 0 38px;
+  }
+
+  .name {
+    font-family: 'Newsreader', serif; font-weight: 300;
+    font-size: clamp(72px, 11vw, 168px);
+    line-height: 0.92; letter-spacing: -0.025em;
+    color: var(--vellum); margin: 0;
+  }
+  .name em { font-style: italic; color: var(--citron); font-weight: 400; }
+  .name .amp {
+    font-style: italic;
+    color: rgba(241,234,210,0.5);
+    padding: 0 0.05em;
+  }
+
+  .tag {
+    margin-top: 38px; max-width: 60ch;
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 22px; line-height: 1.45;
+    color: var(--vellum-dim);
+  }
+  .tag em { color: var(--citron); font-style: italic; }
+
+  /* Hero meta row at the bottom of the hero */
+  .meta {
+    display: grid; grid-template-columns: repeat(4, auto);
+    gap: 80px;
+    justify-content: center;
+    padding-top: 26px;
+    border-top: 1px solid var(--hair);
+    max-width: 1280px; margin: 0 auto; width: 100%;
+  }
+  .meta .cell { padding-right: 0; }
+  .meta .k {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--vellum-faint); margin-bottom: 6px;
+  }
+  .meta .v {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 21px; color: var(--vellum);
+  }
+  .meta .v.code { font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 15px; color: var(--citron); letter-spacing: 0.1em; }
+
+  /* Applied/works section — same grid weight as the other panels.
+     Center the modules grid vertically + horizontally with a sensible max-width. */
+  .applied-screen .applied {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .applied-screen .modules { max-width: 1480px; margin: 0 auto; width: 100%; }
+
+  /* ---------- APPLIED EXAMPLES PANEL ---------- */
+  .applied {
+    position: relative; z-index: 3;
+    padding: 100px 80px;
+    border-top: 1px solid var(--hair);
+  }
+  .applied .section-head {
+    display: flex; align-items: baseline; gap: 16px;
+    margin-bottom: 48px;
+  }
+  .applied .menu-label { margin-bottom: 0; }
+  .applied .rule { flex: 1; height: 1px; background: var(--hair); }
+
+  .modules {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 28px;
+    align-items: stretch;
+  }
+  @media (max-width: 900px) {
+    .modules { grid-template-columns: 1fr; }
+    .index { position: static; }
+  }
+
+  /* Card carousel: horizontal scroll between project modules */
+  .cards-wrap { min-width: 0; }
+  .cards-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--vellum-faint);
+  }
+  .cards-meta .now-card { color: var(--citron); }
+  .cards-nav { display: flex; gap: 6px; }
+  .cards-nav button {
+    width: 56px; height: 36px;
+    background: rgba(6,16,48,0.55);
+    border: 1px solid rgba(155,202,240,0.22);
+    color: var(--vellum); cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 15px;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .cards-nav button:hover {
+    background: rgba(74,240,255,0.1);
+    border-color: var(--pad);
+    color: var(--pad);
+  }
+  .cards-nav button:disabled { opacity: 0.3; cursor: default; }
+  .cards-nav button:disabled:hover { background: rgba(6,16,48,0.55); border-color: rgba(155,202,240,0.22); color: var(--vellum); }
+
+  .cards-scroll {
+    display: flex; gap: 0;
+    overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 18px 0;
+    margin: -18px 0;
+  }
+  .cards-scroll::-webkit-scrollbar { height: 6px; }
+  .cards-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+  .cards-scroll::-webkit-scrollbar-thumb { background: rgba(155,202,240,0.3); border-radius: 3px; }
+  .cards-scroll > .module {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-height: 540px;
+    display: flex;
+  }
+  .cards-scroll > .module > .module-grid {
+    flex: 1; width: 100%;
+  }
+
+  /* PCB-module — a darker patch of substrate sitting on the board.
+     Diagonal-rounded silhouette (TL + BR) for the SMD-pad shape. */
+  .module {
+    position: relative; z-index: 4;
+    background:
+      linear-gradient(180deg, #081846 0%, #061338 55%, #040d28 100%);
+    border: 1px solid rgba(155,202,240,0.18);
+    border-top-color: rgba(200,225,250,0.32);
+    border-bottom-color: rgba(0,0,0,0.5);
+    padding: 36px 38px 30px;
+    border-radius: 56px 3px 56px 3px;
+    box-shadow: none;
+  }
+  /* Silkscreen inset outline, follows the diagonal curve */
+  .module > .silkscreen {
+    position: absolute; inset: 8px; pointer-events: none;
+    border: 1px solid rgba(155,202,240,0.07);
+    border-radius: 48px 2px 48px 2px;
+  }
+  /* Rounded corner replaces the L bracket — no more ::before tick. */
+  .module::before { content: none; }
+
+  /* IC pin teeth removed (rounded SMD silhouette takes their place) */
+  .module .ic-pins { display: none; }
+
+  /* IC PIN ROWS — softened so the chip reads as substrate, not cyber. */
+  .module .ic-pins {
+    position: absolute; top: 30px; bottom: 30px; width: 8px;
+    pointer-events: none;
+  }
+  .module .ic-pins.left  { left: -8px; }
+  .module .ic-pins.right { right: -8px; }
+  .module .ic-pins::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(200,220,240,0.32) 0,
+      rgba(200,220,240,0.32) 3px,
+      transparent 3px,
+      transparent 16px
+    );
+  }
+  .module .ic-pins.left::after,
+  .module .ic-pins.right::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 1px;
+    background: rgba(0,0,0,0.5);
+  }
+  .module .ic-pins.left::after  { right: 0; }
+  .module .ic-pins.right::after { left: 0; }
+
+  /* Two-column grid: name lives on the LEFT, body text on the right */
+  .module .module-grid {
+    display: grid; grid-template-columns: 340px 1fr;
+    gap: 56px; align-items: start;
+  }
+  @media (max-width: 1200px) {
+    .module .module-grid { grid-template-columns: 280px 1fr; gap: 36px; }
+  }
+  .module-left {
+    border-right: 1px dashed var(--hair);
+    padding-right: 24px;
+    position: relative;
+  }
+  .module-right { min-width: 0; }
+
+  .module-id {
+    display: flex; flex-direction: column; gap: 5px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--vellum-faint); margin-bottom: 26px;
+  }
+  .module-id .idx { color: var(--citron); font-weight: 500; font-size: 14px; }
+  .module-id .when { font-size: 11px; }
+  .module h3 {
+    font-family: 'Newsreader', serif; font-weight: 400;
+    font-size: 60px; line-height: 0.98; letter-spacing: -0.018em;
+    margin: 0 0 12px; color: var(--vellum);
+    word-break: break-word;
+  }
+  .module h3 em { font-style: italic; color: var(--citron); }
+  .module .module-sub {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 20px; line-height: 1.4;
+    color: var(--vellum-dim); margin: 10px 0 0;
+  }
+  .module .tldr {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 28px; line-height: 1.32;
+    color: var(--vellum); margin: 0 0 28px;
+    max-width: 56ch;
+    padding-bottom: 22px;
+    border-bottom: 1px dashed var(--hair);
+  }
+  .module p {
+    margin: 0 0 16px; font-size: 19px; line-height: 1.55;
+    color: rgba(241,234,210,0.78);
+    max-width: 64ch;
+  }
+  .module .stack-row {
+    margin-top: 22px; padding-top: 14px;
+    border-top: 1px dashed var(--hair);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.06em; color: var(--vellum-dim);
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .module-left .stack-row {
+    border-top: 1px dashed var(--hair);
+    margin-top: 18px; padding-top: 14px;
+  }
+  .module .chip {
+    display: inline-block; padding: 7px 16px;
+    background: rgba(155,202,240,0.10);
+    color: var(--vellum); font-size: 13px;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em;
+    white-space: nowrap;
+    border: 0; border-radius: 0;
+  }
+  .module .chip.hot {
+    background: rgba(74,240,255,0.20);
+    color: var(--pad);
+  }
+
+  /* Single registration pad — sits inside the rounded TL corner */
+  .module .corner-pad {
+    position: absolute; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--citron);
+    box-shadow: 0 0 6px rgba(215,199,66,0.6);
+    z-index: 2;
+    top: 26px; left: 26px;
+  }
+
+  /* Index / sidebar module — sits in the BACKGROUND (no elevation, no chip shadow).
+     Keeps the citron accents so it still reads as part of the system. */
+  .index {
+    padding: 26px 24px;
+    align-self: start;
+    position: sticky; top: 24px;
+    background: rgba(8, 20, 56, 0.25);
+    border: 1px solid rgba(155,202,240,0.08);
+    box-shadow: none;
+  }
+  .index > .silkscreen { display: none; }
+  .index .index-title {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 13px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--citron); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .index .index-title::before {
+    content: ''; width: 18px; height: 1px; background: var(--citron); opacity: 0.7;
+  }
+  .index ol {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column;
+  }
+  .index li {
+    display: grid; grid-template-columns: 26px 1fr auto;
+    align-items: center; gap: 10px;
+    padding: 12px 0; border-bottom: 1px dashed var(--hair);
+    position: relative;
+    cursor: pointer;
+    transition: padding-left .15s, background .15s;
+  }
+  .index li[data-idx] {
+    margin: 0 -10px; padding-left: 10px; padding-right: 10px;
+  }
+  .index li[data-idx]:hover {
+    background: rgba(74,240,255,0.05);
+  }
+  .index li.active { background: rgba(74,240,255,0.08); }
+  .index li.active .li-name { color: var(--vellum); }
+  .index li.active .li-num { color: var(--citron); }
+  .index li:last-child { border-bottom: 0; cursor: default; }
+  .index li:last-child:hover { background: transparent; }
+  .index .li-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.1em; color: var(--vellum-faint);
+  }
+  .index .li-name {
+    font-family: 'Newsreader', serif; font-size: 16px;
+    color: var(--vellum-dim);
+  }
+  .index .li-name em { font-style: italic; color: var(--citron); }
+  .index .li-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.08em; color: var(--vellum-faint);
+    text-transform: uppercase;
+  }
+  /* The node pad on each row, animated */
+  .index .li-pad {
+    position: absolute; left: -6px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--pad); box-shadow: 0 0 6px var(--pad);
+    opacity: 0.6;
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact-section { padding: 0; }
+  .contact-section { display: flex; }
+  .contact-wrap {
+    position: relative; z-index: 3;
+    padding: 100px 80px 80px;
+    border-top: 1px solid var(--hair);
+    max-width: 1280px; margin: 0 auto;
+    width: 100%;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .contact-grid {
+    display: grid; grid-template-columns: auto 560px;
+    gap: 48px; align-items: start;
+    justify-content: center;
+  }
+  .contact-intro { max-width: 460px; }
+  .contact-intro h2 {
+    font-family: 'Newsreader', serif; font-weight: 400;
+    font-size: 64px; line-height: 0.95; letter-spacing: -0.02em;
+    margin: 0 0 18px; color: var(--vellum);
+  }
+  .contact-intro h2 em { font-style: italic; color: var(--citron); }
+  .contact-intro p {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 19px; line-height: 1.45; color: var(--vellum-dim);
+    max-width: 44ch; margin: 0 0 32px;
+  }
+  .contact-channels {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .contact-channels li {
+    display: grid; grid-template-columns: 110px 1fr; gap: 18px;
+    padding: 10px 0; border-bottom: 1px dashed var(--hair);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--vellum); letter-spacing: 0.04em;
+  }
+  .contact-channels .k {
+    color: var(--citron); font-size: 10px;
+    letter-spacing: 0.18em; padding-top: 3px;
+  }
+
+  /* The form chip: same SMD-pad silhouette, no shadow */
+  .contact-form {
+    position: relative;
+    background:
+      linear-gradient(180deg, #081846 0%, #061338 55%, #040d28 100%);
+    border: 1px solid rgba(155,202,240,0.18);
+    border-top-color: rgba(200,225,250,0.32);
+    border-bottom-color: rgba(0,0,0,0.5);
+    padding: 32px 34px 30px;
+    border-radius: 56px 3px 56px 3px;
+    box-shadow: none;
+  }
+  /* No corner bracket — the rounded TL corner replaces it */
+  .contact-form::before { content: none; }
+  .form-id {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--vellum-faint); margin-bottom: 20px;
+  }
+  .form-id .idx { color: var(--citron); }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--citron); margin-bottom: 6px;
+  }
+  .field input, .field textarea {
+    width: 100%; box-sizing: border-box;
+    background: rgba(6,16,48,0.65);
+    border: 1px solid rgba(155,202,240,0.22);
+    border-bottom-color: rgba(155,202,240,0.45);
+    color: var(--vellum);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    padding: 12px 14px; outline: none; border-radius: 2px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    resize: vertical;
+  }
+  .field input::placeholder, .field textarea::placeholder {
+    color: rgba(241,234,210,0.28);
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--pad);
+    box-shadow: 0 0 0 1px rgba(74,240,255,0.25), 0 0 12px rgba(74,240,255,0.18);
+    background: rgba(6,16,48,0.85);
+  }
+  .tx-button {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(74,240,255,0.18), rgba(74,240,255,0.06));
+    border: 1px solid var(--pad);
+    color: var(--pad);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    padding: 16px 22px; cursor: pointer; border-radius: 2px;
+    transition: all 0.2s; margin-top: 8px;
+    position: relative; overflow: hidden;
+  }
+  .tx-button:hover {
+    background: linear-gradient(180deg, rgba(74,240,255,0.3), rgba(74,240,255,0.1));
+    box-shadow: 0 0 24px rgba(74,240,255,0.4), inset 0 0 12px rgba(74,240,255,0.15);
+    color: var(--vellum);
+  }
+  .tx-button .arrow { font-family: 'Newsreader', serif; font-size: 18px; }
+  .contact-status {
+    margin-top: 14px; min-height: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; color: var(--pad-warm);
+  }
+
+  /* ---------- FOOTER ---------- */
+  .footnote {
+    position: relative; z-index: 3;
+    padding: 22px 80px 36px;
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--vellum-faint);
+    border-top: 1px solid var(--hair);
+  }
+
+  /* Mobile tame */
+  @media (max-width: 900px) {
+    .hero { padding: 40px 28px; }
+    .topbar { grid-template-columns: 1fr; gap: 6px; }
+    .topbar .left, .topbar .mid, .topbar .right { text-align: left; }
+    .meta { grid-template-columns: 1fr 1fr; }
+    .applied { padding: 60px 28px; }
+    .modules { grid-template-columns: 1fr; }
+    .module .module-grid { grid-template-columns: 1fr; gap: 24px; }
+    .module-left { border-right: 0; border-bottom: 1px dashed var(--hair); padding: 0 0 18px; }
+    .contact-wrap { padding: 60px 28px; }
+    .contact-grid { grid-template-columns: 1fr; gap: 32px; }
+    .contact-intro h2 { font-size: 44px; }
+    .footnote { padding: 18px 28px; flex-direction: column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="screen" data-screen-label="01 Hero">
+  <div class="grid-bg"></div>
+
+  <!-- Faint binary bleeds (decorative) -->
+  <div class="binary b1">01101000 01100101 01101100
+01101100 01101111 00100000
+01110111 01101111 01110010
+01101100 01100100</div>
+  <div class="binary b2">0xF1EA · 0xD200
+0x4A40 · 0xF0FF
+0xD7C7 · 0x4200</div>
+  <div class="binary b3">// trace.alpha = 0.45
+// pulse.duration = 4200
+// pad.glow = on</div>
+
+  <!-- PCB traces SVG -->
+  <svg class="pcb" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+    <!-- TOP-LEFT CLUSTER -->
+    <path class="trace t1" d="M -20 70 L 80 70 L 110 100 L 110 200 L 90 220 L 90 320 L 120 350 L 120 460" />
+    <path class="trace t2" d="M 60 -20 L 60 120 L 130 190 L 270 190 L 300 160 L 460 160 L 490 190 L 600 190" />
+    <path class="trace t3" d="M -20 280 L 50 280 L 80 310 L 80 400 L 110 430 L 280 430" />
+
+    <!-- TOP-RIGHT CLUSTER (mirror) -->
+    <path class="trace t4" d="M 1940 70 L 1840 70 L 1810 100 L 1810 200 L 1830 220 L 1830 320 L 1800 350 L 1800 460" />
+    <path class="trace t5" d="M 1860 -20 L 1860 120 L 1790 190 L 1650 190 L 1620 160 L 1460 160 L 1430 190 L 1320 190" />
+    <path class="trace t6" d="M 1940 280 L 1870 280 L 1840 310 L 1840 400 L 1810 430 L 1640 430" />
+
+    <!-- BOTTOM-LEFT CLUSTER -->
+    <path class="trace t7" d="M -20 1010 L 80 1010 L 110 980 L 110 880 L 90 860 L 90 760 L 120 730 L 120 620" />
+    <path class="trace t8" d="M 60 1100 L 60 960 L 130 890 L 270 890 L 300 920 L 460 920 L 490 890 L 600 890" />
+    <path class="trace t9" d="M -20 800 L 50 800 L 80 770 L 80 680 L 110 650 L 280 650" />
+
+    <!-- BOTTOM-RIGHT CLUSTER -->
+    <path class="trace t10" d="M 1940 1010 L 1840 1010 L 1810 980 L 1810 880 L 1830 860 L 1830 760 L 1800 730 L 1800 620" />
+    <path class="trace t11" d="M 1860 1100 L 1860 960 L 1790 890 L 1650 890 L 1620 920 L 1460 920 L 1430 890 L 1320 890" />
+    <path class="trace t12" d="M 1940 800 L 1870 800 L 1840 770 L 1840 680 L 1810 650 L 1640 650" />
+
+    <!-- INNER LEFT NODES (under name) -->
+    <path class="trace t13" d="M 280 540 L 380 540 L 410 570 L 540 570" />
+    <path class="trace t14" d="M 280 600 L 350 600 L 380 630 L 480 630" />
+
+    <!-- INNER RIGHT NODES -->
+    <path class="trace t15" d="M 1640 540 L 1540 540 L 1510 570 L 1380 570" />
+    <path class="trace t16" d="M 1640 600 L 1570 600 L 1540 630 L 1440 630" />
+
+    <!-- PADS (small circles + outlined) — placed at trace ends/joints -->
+    <g id="pads">
+      <circle class="pad p" cx="110" cy="460" r="3.5"/>
+      <circle class="pad p" cx="600" cy="190" r="3.5"/>
+      <circle class="pad p" cx="280" cy="430" r="3.5"/>
+      <circle class="pad p" cx="1810" cy="460" r="3.5"/>
+      <circle class="pad p" cx="1320" cy="190" r="3.5"/>
+      <circle class="pad p" cx="1640" cy="430" r="3.5"/>
+      <circle class="pad p" cx="120" cy="620" r="3.5"/>
+      <circle class="pad p" cx="600" cy="890" r="3.5"/>
+      <circle class="pad p" cx="280" cy="650" r="3.5"/>
+      <circle class="pad p" cx="1800" cy="620" r="3.5"/>
+      <circle class="pad p" cx="1320" cy="890" r="3.5"/>
+      <circle class="pad p" cx="1640" cy="650" r="3.5"/>
+      <circle class="pad pad-warm p" cx="540" cy="570" r="3"/>
+      <circle class="pad pad-warm p" cx="480" cy="630" r="3"/>
+      <circle class="pad pad-warm p" cx="1380" cy="570" r="3"/>
+      <circle class="pad pad-warm p" cx="1440" cy="630" r="3"/>
+
+      <!-- Outlined "via" pads (decorative ring) -->
+      <circle class="pad-outline" cx="110" cy="200" r="5"/>
+      <circle class="pad-outline" cx="90" cy="320" r="5"/>
+      <circle class="pad-outline" cx="1810" cy="200" r="5"/>
+      <circle class="pad-outline" cx="1830" cy="320" r="5"/>
+      <circle class="pad-outline" cx="110" cy="880" r="5"/>
+      <circle class="pad-outline" cx="1810" cy="880" r="5"/>
+    </g>
+
+    <!-- ANNOTATIONS (mono labels next to traces) -->
+    <text class="annot" x="612" y="186">VCC.01</text>
+    <text class="annot citron" x="292" y="426">GND</text>
+    <text class="annot" x="1300" y="186" text-anchor="end">DAT.02</text>
+    <text class="annot" x="1652" y="426">CLK</text>
+    <text class="annot" x="612" y="886">RX/TX</text>
+    <text class="annot citron" x="552" y="566">accent</text>
+    <text class="annot citron" x="1372" y="566" text-anchor="end">accent</text>
+  </svg>
+
+  <!-- PULSES SVG (separate so we can build it from JS based on trace lengths) -->
+  <svg class="pcb" id="pulse-layer" viewBox="0 0 1920 1080" preserveAspectRatio="none"></svg>
+
+  <div class="hero">
+    <div class="topbar">
+      <div class="left"><span class="dot"></span>FOLIO № 01 · BLUEPRINT</div>
+      <div class="mid">— Tasting Menu —</div>
+      <div class="right">REV. 0.2 · 26 / 05 / 2026</div>
+    </div>
+
+    <div class="center">
+      <div class="menu-label">Software · Engineering · Folio</div>
+      <h1 class="name">Gerardo <em>Lazo</em><br/><em>Arones</em></h1>
+      <div class="menu-sub" style="margin-top:24px;">a tasting menu of <em style="color:var(--citron);font-style:italic;">things made in the open</em></div>
+      <p class="tag">Software engineering student at Ensign, former pastry chef from <em>Le Cordon Bleu</em>. I build full-stack interfaces, back-ends, and the homelab that runs most of what I use day-to-day.</p>
+    </div>
+
+    <div class="meta">
+      <div class="cell">
+        <div class="k">Course</div>
+        <div class="v">B.S. <em>Software Engineering</em></div>
+      </div>
+      <div class="cell">
+        <div class="k">Class of</div>
+        <div class="v code">2027</div>
+      </div>
+      <div class="cell">
+        <div class="k">Currently building</div>
+        <div class="v">Bonanza · payments + booking</div>
+      </div>
+      <div class="cell">
+        <div class="k">Status</div>
+        <div class="v code">// OPEN · summer '26</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPLIED MODULES ============ -->
+<section class="screen applied-screen" data-screen-label="02 Applied">
+  <div class="grid-bg"></div>
+  <!-- Quiet edge-only PCB decoration. Traces stay in the section's corners,
+       far from the card area, so they never read through the modules. -->
+  <svg class="pcb" viewBox="0 0 1920 1100" preserveAspectRatio="none">
+    <!-- 4 traces on each side, evenly spaced — stay in the section's corners + edges,
+         away from the card area. -->
+    <path class="trace" d="M -20 80 L 60 80 L 90 110 L 90 220" />
+    <path class="trace" d="M -20 320 L 80 320 L 110 350 L 110 440" />
+    <path class="trace" d="M -20 640 L 80 640 L 110 610 L 110 520" />
+    <path class="trace" d="M -20 1020 L 60 1020 L 90 990 L 90 880" />
+    <path class="trace" d="M 1940 80 L 1860 80 L 1830 110 L 1830 220" />
+    <path class="trace" d="M 1940 320 L 1840 320 L 1810 350 L 1810 440" />
+    <path class="trace" d="M 1940 640 L 1840 640 L 1810 610 L 1810 520" />
+    <path class="trace" d="M 1940 1020 L 1860 1020 L 1830 990 L 1830 880" />
+    <circle class="pad p-a" cx="90" cy="220" r="3.5"/>
+    <circle class="pad p-a" cx="110" cy="440" r="3.5"/>
+    <circle class="pad pad-warm p-a" cx="110" cy="520" r="3"/>
+    <circle class="pad p-a" cx="90" cy="880" r="3.5"/>
+    <circle class="pad p-a" cx="1830" cy="220" r="3.5"/>
+    <circle class="pad p-a" cx="1810" cy="440" r="3.5"/>
+    <circle class="pad pad-warm p-a" cx="1810" cy="520" r="3"/>
+    <circle class="pad p-a" cx="1830" cy="880" r="3.5"/>
+  </svg>
+  <svg class="pcb" id="pulse-layer-2" viewBox="0 0 1920 1100" preserveAspectRatio="none"></svg>
+
+  <div class="applied">
+    <div class="section-head">
+      <div class="menu-label">— Selected Works —</div>
+      <div class="rule"></div>
+      <div class="mono" style="font-size:11px; letter-spacing:.14em; color:var(--vellum-faint); text-transform:uppercase;">02 / system applied</div>
+    </div>
+
+    <div class="modules">
+      <!-- LEFT: card carousel — scroll horizontally between project modules -->
+      <div class="cards-wrap">
+        <div class="cards-meta">
+          <span><span class="now-card" id="now-card">01</span> / 03 · scroll →</span>
+          <div class="cards-nav">
+            <button type="button" data-dir="-1" aria-label="Previous">←</button>
+            <button type="button" data-dir="1" aria-label="Next">→</button>
+          </div>
+        </div>
+
+        <div class="cards-scroll" id="cards-scroll">
+          <!-- Card 01 — Bonanza -->
+          <article class="module">
+            <div class="silkscreen"></div>
+            <div class="ic-pins left"></div>
+            <div class="ic-pins right"></div>
+            <div class="corner-pad"></div>
+
+            <div class="module-grid">
+              <header class="module-left">
+                <div class="module-id">
+                  <span class="idx">MOD · 01</span>
+                  <span class="when">Apr 2026 — present</span>
+                  <span class="when">sole developer</span>
+                </div>
+                <h3>Bonanza<br/><em>Transportation.</em></h3>
+                <p class="module-sub">— full-stack booking platform.</p>
+                <div class="stack-row">
+                  <span class="chip hot">Next.js 15</span>
+                  <span class="chip">TypeScript</span>
+                  <span class="chip">Supabase</span>
+                  <span class="chip">Stripe</span>
+                  <span class="chip">Twilio</span>
+                  <span class="chip">Maps API</span>
+                  <span class="chip">Vercel</span>
+                </div>
+              </header>
+              <div class="module-right">
+                <p class="tldr">A premium transportation service had no way for customers to book online. I built one — from the database up to the Stripe receipt — by myself.</p>
+                <p>Architected the whole system from zero: schema, payment flow, SMS confirmations, deployment. Started with the boring docs (System Design, ERD, service-layer class diagram, MVP use cases) so the build itself stayed tightly scoped.</p>
+                <p>Configured a real engineering workflow on top — GitHub Org with branch protection, Vercel CI/CD, custom domain on Google Workspace — because shipping a one-person project should still look like a team made it.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 02 — Project Zenith -->
+          <article class="module">
+            <div class="silkscreen"></div>
+            <div class="ic-pins left"></div>
+            <div class="ic-pins right"></div>
+            <div class="corner-pad"></div>
+
+            <div class="module-grid">
+              <header class="module-left">
+                <div class="module-id">
+                  <span class="idx">MOD · 02</span>
+                  <span class="when">Jun — Nov 2025</span>
+                  <span class="when">co-developer</span>
+                </div>
+                <h3>Project<br/><em>Zenith.</em></h3>
+                <p class="module-sub">— AI streaming plugin for Jellyfin.</p>
+                <div class="stack-row">
+                  <span class="chip hot">Python</span>
+                  <span class="chip">FastAPI</span>
+                  <span class="chip">REST</span>
+                  <span class="chip">C# / .NET</span>
+                  <span class="chip">Ollama</span>
+                </div>
+              </header>
+              <div class="module-right">
+                <p class="tldr">Bringing back the feeling of "what's on TV?" — for a self-hosted kids' library, with an LLM playing programming director.</p>
+                <p>Co-built a plugin that turns an on-demand Jellyfin library into a continuous, AI-curated live channel for children's content. I owned the backend — a Python/FastAPI service that the C# plugin talks to over REST.</p>
+                <p>The integration gap nobody had solved: Jellyfin couldn't natively serve the AI-scheduled stream. I engineered server-side video streaming straight from FastAPI to close it. All inference runs locally through Ollama — no external API in the loop.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 03 — The Homelab -->
+          <article class="module">
+            <div class="silkscreen"></div>
+            <div class="ic-pins left"></div>
+            <div class="ic-pins right"></div>
+            <div class="corner-pad"></div>
+
+            <div class="module-grid">
+              <header class="module-left">
+                <div class="module-id">
+                  <span class="idx">MOD · 03</span>
+                  <span class="when">ongoing</span>
+                  <span class="when">personal infra</span>
+                </div>
+                <h3>The<br/><em>Homelab.</em></h3>
+                <p class="module-sub">— a hobby teaching me production Linux.</p>
+                <div class="stack-row">
+                  <span class="chip hot">Proxmox</span>
+                  <span class="chip">Docker</span>
+                  <span class="chip">Linux · Fedora</span>
+                  <span class="chip">Nginx</span>
+                  <span class="chip">WireGuard</span>
+                  <span class="chip">NetBird</span>
+                </div>
+              </header>
+              <div class="module-right">
+                <p class="tldr">A Proxmox host running 20+ Docker containers — most of what I'd otherwise pay a SaaS for. The unglamorous parts of being an engineer.</p>
+                <p>A 6-service automation pipeline I built around Sonarr — chaining Prowlarr, qBittorrent (behind Gluetun/WireGuard), Bazarr, Shoko, and Jellyfin into one hardlink-based workflow.</p>
+                <p>Nginx Proxy Manager fronts everything with TLS; NetBird gives me mesh VPN access from anywhere. Along the way I've broken and fixed GPU passthrough, restructured NFS storage under load, and lost more than one VM to OOMs — which has done more for my Linux skills than any course.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- RIGHT: Index — clickable, jumps the carousel to that card -->
+      <article class="module index">
+        <div class="silkscreen"></div>
+        <div class="ic-pins left"></div>
+        <div class="ic-pins right"></div>
+        <div class="corner-pad"></div>
+
+        <div class="index-title">Index — vol. 01</div>
+        <ol>
+          <li data-idx="0">
+            <span class="li-pad pad-node"></span>
+            <span class="li-num">01.</span>
+            <span class="li-name">Bonanza <em>Transportation</em></span>
+            <span class="li-meta">'26 · TS</span>
+          </li>
+          <li data-idx="1">
+            <span class="li-pad pad-node"></span>
+            <span class="li-num">02.</span>
+            <span class="li-name">Project <em>Zenith</em></span>
+            <span class="li-meta">'25 · PY</span>
+          </li>
+          <li data-idx="2">
+            <span class="li-pad pad-node"></span>
+            <span class="li-num">03.</span>
+            <span class="li-name">The <em>Homelab</em></span>
+            <span class="li-meta">ongoing</span>
+          </li>
+          <li>
+            <span class="li-pad pad-node"></span>
+            <span class="li-num">04.</span>
+            <span class="li-name">— <em>more soon</em></span>
+            <span class="li-meta">draft</span>
+          </li>
+        </ol>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="screen contact-section" data-screen-label="03 Contact">
+  <div class="grid-bg"></div>
+
+  <!-- TX traces: dense outgoing routing from the form to the right edge.
+       The .tx-trace is the highlighted "main" line that fires on send. -->
+  <svg class="pcb" viewBox="0 0 1920 1000" preserveAspectRatio="none">
+    <!-- Incoming context traces — half-length, end around ~280-310 -->
+    <path class="trace t-c1" d="M -20 140 L 120 140 L 150 110 L 240 110 L 270 140 L 310 140" />
+    <path class="trace t-c2" d="M -20 280 L 90 280 L 120 310 L 200 310 L 230 280 L 280 280" />
+    <path class="trace t-c3" d="M -20 460 L 80 460 L 110 430 L 220 430 L 250 460 L 300 460" />
+    <path class="trace t-c4" d="M -20 640 L 100 640 L 130 670 L 220 670 L 250 640 L 280 640" />
+    <path class="trace t-c5" d="M -20 820 L 60 820 L 90 790 L 200 790 L 230 820 L 280 820" />
+
+    <!-- Outgoing TX network: many branches converging into the main TX line -->
+    <path class="trace t-tx2" d="M 1080 720 L 1180 720 L 1210 690 L 1320 690 L 1350 720 L 1500 720" />
+    <path class="trace t-tx3" d="M 1080 820 L 1200 820 L 1230 850 L 1380 850 L 1410 820 L 1560 820 L 1590 790 L 1700 790" />
+    <path class="trace t-tx4" d="M 1080 920 L 1180 920 L 1210 890 L 1340 890 L 1370 920 L 1500 920" />
+
+    <!-- THE TX MAIN ARTERY — lights up on submit -->
+    <path class="trace tx-trace" id="tx-trace" d="M 1080 620 L 1240 620 L 1270 590 L 1420 590 L 1450 560 L 1620 560 L 1650 590 L 1820 590 L 1850 620 L 1940 620" />
+
+    <!-- Pads -->
+    <g class="tx-pads">
+      <circle class="pad p-c" cx="310" cy="140" r="3.5"/>
+      <circle class="pad p-c" cx="280" cy="280" r="3.5"/>
+      <circle class="pad pad-warm p-c" cx="300" cy="460" r="3"/>
+      <circle class="pad p-c" cx="280" cy="640" r="3.5"/>
+      <circle class="pad p-c" cx="280" cy="820" r="3.5"/>
+      <circle class="pad p-c" cx="1500" cy="720" r="3.5"/>
+      <circle class="pad p-c" cx="1700" cy="790" r="3.5"/>
+      <circle class="pad p-c" cx="1500" cy="920" r="3.5"/>
+      <!-- Big TX antenna pad on the right edge -->
+      <circle class="pad tx-pad" id="tx-pad" cx="1920" cy="620" r="7"/>
+      <circle class="pad-outline" cx="1920" cy="620" r="14"/>
+      <circle class="pad-outline" cx="1920" cy="620" r="22"/>
+    </g>
+    <text class="annot citron" x="1890" y="598" text-anchor="end">TX.OUT</text>
+  </svg>
+  <svg class="pcb" id="pulse-layer-3" viewBox="0 0 1920 1000" preserveAspectRatio="none"></svg>
+
+  <div class="contact-wrap">
+    <div class="section-head">
+      <div class="menu-label">— Open a Channel —</div>
+      <div class="rule"></div>
+      <div class="mono" style="font-size:11px; letter-spacing:.14em; color:var(--vellum-faint); text-transform:uppercase;">03 / transmit</div>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-intro">
+        <h2>Send a<br/><em>transmission.</em></h2>
+        <p>For hiring, collaboration, or simply saying hello. I read everything; I reply to most.</p>
+        <ul class="contact-channels">
+          <li><span class="k">EMAIL</span><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afc8c8c3989b99efcac1dcc6c8c181cacbda">[email&#160;protected]</a></span></li>
+          <li><span class="k">LINKEDIN</span><span>/in/arones-41-gerardo</span></li>
+          <li><span class="k">GITHUB</span><span>github.com/[your-handle]</span></li>
+          <li><span class="k">PHONE</span><span>+1 (435) 513-5284</span></li>
+        </ul>
+      </div>
+
+      <form class="contact-form" id="contact-form">
+        <div class="form-id">
+          <span class="idx">TX · CHANNEL 01</span>
+          <span>direct → mail client</span>
+        </div>
+        <div class="field">
+          <label for="f-from">From</label>
+          <input id="f-from" type="email" name="from" required placeholder="you@somewhere.com" />
+        </div>
+        <div class="field">
+          <label for="f-subj">Subject</label>
+          <input id="f-subj" type="text" name="subject" placeholder="opportunity at acme · question · hello" />
+        </div>
+        <div class="field">
+          <label for="f-body">Message</label>
+          <textarea id="f-body" name="body" rows="5" placeholder="Tell me what you're working on."></textarea>
+        </div>
+        <button type="submit" class="tx-button">
+          <span>Transmit</span>
+          <span class="arrow">→</span>
+        </button>
+        <div class="contact-status" id="contact-status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="footnote">
+  <span>GERARDO LAZO · BLUEPRINT v0.3</span>
+  <span style="color:var(--citron);">— pcb rev. B —</span>
+  <span>SCROLL · 03 / 03</span>
+</div>
+
+<!-- ============ ANIME.JS ============ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+<script>
+  // Build a "pulse" overlay path for each .trace so we can run a moving dash along it.
+  function buildPulses(traceLayerSelector, pulseLayerId) {
+    const layer = document.getElementById(pulseLayerId);
+    const traces = document.querySelectorAll(traceLayerSelector + ' .trace');
+    const pulses = [];
+    traces.forEach((tr, i) => {
+      const d = tr.getAttribute('d');
+      const ns = 'http://www.w3.org/2000/svg';
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', d);
+      p.setAttribute('class', 'pulse');
+      p.style.opacity = '0';
+      layer.appendChild(p);
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = `${Math.min(80, len * 0.18)} ${len}`;
+      p.style.strokeDashoffset = len;
+      pulses.push({ el: p, len });
+    });
+    return pulses;
+  }
+
+  // -------- 1. DRAW IN TRACES (first reveal) --------
+  function drawInTraces(selector) {
+    const traces = document.querySelectorAll(selector);
+    traces.forEach(t => {
+      const len = t.getTotalLength();
+      t.style.strokeDasharray = `${len}`;
+      t.style.strokeDashoffset = `${len}`;
+      t.style.opacity = '1';
+    });
+    return anime({
+      targets: traces,
+      strokeDashoffset: [(el) => el.getTotalLength(), 0],
+      duration: 1800,
+      delay: anime.stagger(80, { from: 'center' }),
+      easing: 'easeInOutQuart',
+    });
+  }
+
+  // -------- 2. CONTINUOUS SIGNAL PULSES --------
+  function startPulses(pulses, baseDelay = 0) {
+    pulses.forEach((p, i) => {
+      p.el.style.opacity = '0';
+      anime({
+        targets: p.el,
+        opacity: [0, 0.95, 0.95, 0],
+        strokeDashoffset: [p.len, -p.len * 0.18],
+        duration: 3200 + (i % 4) * 400,
+        delay: baseDelay + (i * 180) + Math.random() * 600,
+        easing: 'easeInOutSine',
+        loop: true,
+      });
+    });
+  }
+
+  // -------- 3. PAD PULSING (soft breathing) --------
+  function pulsePads(selector) {
+    anime({
+      targets: selector,
+      r: [(el) => +el.getAttribute('r'), (el) => +el.getAttribute('r') * 1.6, (el) => +el.getAttribute('r')],
+      opacity: [0.7, 1, 0.7],
+      duration: 2400,
+      delay: anime.stagger(140, { from: 'random' }),
+      easing: 'easeInOutSine',
+      loop: true,
+      direction: 'alternate',
+    });
+  }
+
+  // -------- 4. INDEX LIST PAD CASCADE --------
+  function cascadeIndex() {
+    const pads = document.querySelectorAll('.li-pad');
+    pads.forEach(p => { p.style.opacity = '0.2'; });
+    anime({
+      targets: '.li-pad',
+      opacity: [0.2, 1, 0.2],
+      scale: [0.8, 1.6, 0.8],
+      duration: 1600,
+      delay: anime.stagger(220),
+      easing: 'easeInOutSine',
+      loop: true,
+    });
+  }
+
+  // -------- KICK IT ALL OFF --------
+  window.addEventListener('DOMContentLoaded', () => {
+    // Hero
+    drawInTraces('.pcb .trace');
+    pulsePads('#pads .pad');
+    const pulses1 = buildPulses('.screen:first-of-type .pcb:first-of-type', 'pulse-layer');
+    startPulses(pulses1, 1800);
+
+    // Applied panel
+    const pulses2 = buildPulses('.screen:nth-of-type(2) .pcb:first-of-type', 'pulse-layer-2');
+    startPulses(pulses2, 800);
+    pulsePads('.p-a');
+    cascadeIndex();
+
+    // -------- CARD CAROUSEL --------
+    const scroll = document.getElementById('cards-scroll');
+    const nowCard = document.getElementById('now-card');
+    const navBtns = document.querySelectorAll('.cards-nav button');
+    const idxItems = document.querySelectorAll('.module.index li[data-idx]');
+    if (scroll) {
+      const cards = scroll.querySelectorAll(':scope > .module');
+      const cardWidth = () => cards[0] ? (cards[0].offsetLeft + cards[0].offsetWidth + 24 - cards[0].offsetLeft) : scroll.clientWidth;
+      const currentIdx = () => {
+        if (!cards[0]) return 0;
+        const step = cards[1] ? (cards[1].offsetLeft - cards[0].offsetLeft) : scroll.clientWidth;
+        return Math.round((scroll.scrollLeft + 1) / step);
+      };
+      const updateUI = () => {
+        const i = Math.max(0, Math.min(cards.length - 1, currentIdx()));
+        if (nowCard) nowCard.textContent = String(i + 1).padStart(2, '0');
+        idxItems.forEach((li, idx) => li.classList.toggle('active', idx === i));
+        navBtns[0].disabled = i === 0;
+        navBtns[1].disabled = i === cards.length - 1;
+      };
+      scroll.addEventListener('scroll', updateUI);
+      navBtns.forEach(b => b.addEventListener('click', () => {
+        const dir = +b.dataset.dir;
+        const i = currentIdx();
+        const target = cards[i + dir];
+        if (target) scroll.scrollTo({ left: target.offsetLeft - scroll.offsetLeft, behavior: 'smooth' });
+      }));
+      idxItems.forEach((li, idx) => {
+        li.addEventListener('click', () => {
+          const target = cards[idx];
+          if (target) scroll.scrollTo({ left: target.offsetLeft - scroll.offsetLeft, behavior: 'smooth' });
+        });
+      });
+      updateUI();
+    }
+
+    // Contact panel
+    const pulses3 = buildPulses('.contact-section .pcb:first-of-type', 'pulse-layer-3');
+    startPulses(pulses3, 1200);
+    pulsePads('.p-c');
+
+    // TX pad slow breathe
+    anime({
+      targets: '#tx-pad',
+      r: [7, 10, 7],
+      opacity: [0.7, 1, 0.7],
+      duration: 2200,
+      easing: 'easeInOutSine',
+      loop: true,
+    });
+
+    // Contact form submit → fire the main TX trace, then open mail client.
+    const form = document.getElementById('contact-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const from = form.from.value.trim();
+        const subj = form.subject.value.trim() || 'Hello from your portfolio';
+        const body = form.body.value.trim();
+        const status = document.getElementById('contact-status');
+        const tx = document.getElementById('tx-trace');
+        const txPad = document.getElementById('tx-pad');
+
+        if (!tx) return;
+        const len = tx.getTotalLength();
+        tx.style.strokeDasharray = `${len}`;
+        tx.style.strokeDashoffset = `${len}`;
+        tx.style.stroke = '#e8f4ff';
+        tx.style.strokeWidth = '2.2';
+        tx.style.filter = 'drop-shadow(0 0 6px #4af0ff) drop-shadow(0 0 14px rgba(74,240,255,0.5))';
+        tx.style.opacity = '1';
+
+        status.textContent = '→ routing…';
+        status.style.color = 'var(--pad)';
+
+        anime({
+          targets: tx,
+          strokeDashoffset: 0,
+          duration: 1200,
+          easing: 'easeInOutQuad',
+          complete: () => {
+            // Big pulse on the TX antenna pad
+            anime({
+              targets: txPad,
+              r: [7, 22, 9],
+              opacity: [1, 0.4, 1],
+              duration: 700,
+              easing: 'easeOutCubic',
+            });
+            status.textContent = '→ transmitted · your mail client should open';
+            status.style.color = 'var(--pad-warm)';
+            // Open mail client
+            const mailBody = (from ? `From: ${from}\n\n` : '') + body;
+            const mailto = `mailto:ggl746@ensign.edu?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(mailBody)}`;
+            setTimeout(() => { window.location.href = mailto; }, 450);
+          },
+        });
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
