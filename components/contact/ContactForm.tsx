@@ -81,7 +81,7 @@ export function ContactForm() {
       if (res.ok && data.ok) {
         pulsePad();
         setStatus({
-          text: "→ transmitted · Gerardo will see it shortly",
+          text: "→ transmitted · Gerard will see it shortly",
           color: "var(--pad-warm)",
         });
         form.reset();

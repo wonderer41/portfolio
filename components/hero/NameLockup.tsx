@@ -1,7 +1,7 @@
 export function NameLockup() {
   return (
     <h1 className="name">
-      Gerardo <em>Lazo</em>
+      Gerard
       <br />
       <em>Arones</em>
     </h1>

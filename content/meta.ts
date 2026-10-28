@@ -10,13 +10,13 @@ export type MetaCell = {
 export const topbar = {
   left: "FOLIO № 01 · BLUEPRINT",
   mid: "— Tasting Menu —",
-  right: "REV. 0.3 · 21 / 05 / 2026",
+  right: "REV. 0.4 · 28 / 10 / 2026",
 };
 
 export const heroMeta: MetaCell[] = [
   { key: "Course", value: "B.S.", emphasis: "Software Engineering" },
   { key: "Class of", value: "2027", code: true },
-  { key: "Currently building", value: "Bonanza" },
+  { key: "Currently building", value: "Daily Intake" },
   { key: "Status", value: "// OPEN", code: true },
 ];
 
@@ -30,7 +30,7 @@ export const bio = {
 export const tagline = "things made in the open";
 
 export const footnote = {
-  left: "GERARDO LAZO · BLUEPRINT v0.3",
+  left: "GERARD ARONES · BLUEPRINT v0.4",
   mid: "— pcb rev. B —",
   right: "SCROLL · 03 / 03",
 };

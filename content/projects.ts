@@ -18,19 +18,19 @@ export type Project = {
 export const projects: Project[] = [
   {
     mod: "MOD · 01",
-    when: "Apr 2026 — present",
+    when: "Jan — Jun 2026",
     role: "sole developer",
     titleTop: "Bonanza",
     titleBottom: "Transportation.",
     sub: "— full-stack booking platform.",
     tldr:
-      "An end-to-end online booking platform for a premium transportation service. Built solo, from database schema and a rule-based pricing engine through payments, real-time route pricing, and automated SMS confirmations.",
+      "A production booking platform for a premium transportation service, built solo and shipped to a real client. I owned it end to end: system design, schema, payments, deployment, and maintenance after launch.",
     body: [
-      "Architected the whole system from zero: Postgres schema, a rule-based fare + hourly pricing engine, a conflict-free scheduling model (per-vehicle timelines, buffers, atomic rebooking), Stripe payments, and SMS/email confirmations. Started with the boring docs (System Design, ERD, service-layer class diagram, MVP use cases) so the build itself stayed tightly scoped.",
-      "Configured a real engineering workflow on top, GitHub Org with branch protection, Vercel CI/CD, custom domain on Google Workspace, because shipping a one-person project should still look like a team made it.",
+      "Architected the whole system from zero: Postgres schema, a rule-based pricing engine, Stripe Checkout + Stripe Tax payments, and real-time route pricing through the Google Routes API. Started with the boring docs (System Design, ERD, service-layer class diagram, MVP use cases) so the build itself stayed tightly scoped.",
+      "After launch I kept shipping on the live app: rebooking, a cancellation flow, notification emails, and .ics calendar invites. All on a real engineering workflow (GitHub Org with branch protection, Vercel CI/CD, custom domain on Google Workspace), with Claude Code in the loop and every generated change reviewed before merging.",
     ],
     chips: [
-      { label: "Next.js 16", hot: true },
+      { label: "Next.js 15", hot: true },
       { label: "TypeScript" },
       { label: "Supabase" },
       { label: "Stripe" },
@@ -43,16 +43,41 @@ export const projects: Project[] = [
   },
   {
     mod: "MOD · 02",
-    when: "Jun — Nov 2025",
-    role: "co-developer",
+    when: "Oct 2026 — present",
+    role: "sole developer",
+    titleTop: "Daily",
+    titleBottom: "Intake.",
+    sub: "— a homelab daily dashboard.",
+    tldr:
+      "One page that tells me what my day looks like: calendar, commits, media requests, markets. Fed by a background worker, and with an AI agent that can write to it.",
+    body: [
+      "A background worker syncs Google Calendar, GitHub, Seerr, and stock APIs on schedules. A token-authenticated REST API lets an AI agent create cards, alerts, and notes, and every change streams to the page over server-sent events. New commits get an AI push-review, posted as progress on sprint items.",
+      "Built like it matters: an IP allowlist, an allowed-hosts check, and CSRF protection on the server; 60+ unit tests behind CI gates; and one Docker image (app, worker, migrations) built and pushed to GHCR by GitHub Actions. Code is public at github.com/wonderer41/daily-intake.",
+    ],
+    chips: [
+      { label: "Next.js 16", hot: true },
+      { label: "React 19" },
+      { label: "TypeScript" },
+      { label: "Prisma 7" },
+      { label: "PostgreSQL 17" },
+      { label: "Docker" },
+      { label: "GitHub Actions" },
+    ],
+    indexName: { plain: "Daily", em: "Intake" },
+    indexMeta: "'26 · TS",
+  },
+  {
+    mod: "MOD · 03",
+    when: "Jun — Dec 2025",
+    role: "backend · two-person team",
     titleTop: "Project",
     titleBottom: "Zenith.",
     sub: "— AI streaming plugin for Jellyfin.",
     tldr:
       "An AI-curated live channel for a self-hosted Jellyfin library, scheduling an on-demand children's catalog into one continuous, automatically programmed stream.",
     body: [
-      "Co-built a plugin that turns an on-demand Jellyfin library into a continuous, AI-curated live channel for children's content. I owned the backend: a Python/FastAPI service that the C# plugin talks to over REST.",
-      "The integration gap nobody had solved: Jellyfin couldn't natively serve the AI-scheduled stream. I engineered server-side video streaming straight from FastAPI to close it. All inference runs locally through Ollama,  no external API in the loop.",
+      "Co-built a plugin that turns an on-demand Jellyfin library into a continuous, AI-curated live channel for children's content, working in agile iterations with peer code review. I owned the backend: a Python/FastAPI REST API that the C# plugin consumes.",
+      "The integration gap nobody had solved: Jellyfin couldn't natively serve the AI-scheduled stream. I engineered server-side video streaming straight from FastAPI to close it. All inference runs locally through Ollama, no external API in the loop.",
     ],
     chips: [
       { label: "Python", hot: true },
@@ -65,7 +90,7 @@ export const projects: Project[] = [
     indexMeta: "'25 · PY",
   },
   {
-    mod: "MOD · 03",
+    mod: "MOD · 04",
     when: "ongoing",
     role: "personal infra",
     titleTop: "The",
@@ -91,7 +116,7 @@ export const projects: Project[] = [
 ];
 
 export const indexDraft = {
-  num: "04.",
+  num: "05.",
   name: { plain: "—", em: "more soon" },
   meta: "draft",
 };

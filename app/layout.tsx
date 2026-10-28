@@ -18,9 +18,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gerardo Lazo — Folio № 01",
+  title: "Gerard Arones — Folio № 01",
   description:
-    "A tasting menu of things made in the open. Software engineering portfolio of Gerardo Lazo — full-stack interfaces, back-ends, and the homelab.",
+    "A tasting menu of things made in the open. Software engineering portfolio of Gerard Arones — full-stack interfaces, back-ends, and the homelab.",
 };
 
 export default function RootLayout({

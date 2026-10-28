@@ -4,14 +4,12 @@ export type Channel = {
   href?: string;
 };
 
-export const mailTarget = "ggl746@ensign.edu";
-
 export const channels: Channel[] = [
-  { key: "EMAIL", value: "gglazoarones@gmail.com", href: "mailto:gglazoarones@gmail.com" },
+  { key: "EMAIL", value: "gerardarones@proton.me", href: "mailto:gerardarones@proton.me" },
   {
     key: "LINKEDIN",
-    value: "/in/arones-41-gerardo",
-    href: "https://www.linkedin.com/in/arones-41-gerardo",
+    value: "/in/gerardarones",
+    href: "https://www.linkedin.com/in/gerardarones",
   },
   {
     key: "GITHUB",
